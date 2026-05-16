@@ -1,0 +1,79 @@
+import * as bip39 from "@scure/bip39";
+import { wordlist } from "@scure/bip39/wordlists/english.js";
+import { hmac } from "@noble/hashes/hmac.js";
+import { sha512 } from "@noble/hashes/sha2.js";
+import { RadixEngineToolkit, PublicKey, NetworkId } from "@radixdlt/radix-engine-toolkit";
+import { Keystore } from "../keystore/Keystore";
+import * as crypto from "crypto";
+import * as fs from "fs";
+import { HARDENED, RADIX_PATH, slip10DeriveEd25519, derivePublicKey } from "./derive";
+
+
+export async function init() {
+  console.log("\n🤖 Agent Wallet — Iniciate");
+  console.log("================================\n");
+
+  if (Keystore.exists()) {
+    console.log("⚠️  Currently a keystore exists:", Keystore.path());
+    console.log("   Actual Wallet Direction :", Keystore.load()?.address);
+    return;
+  }
+
+  // 1. Mnemonic 24 palabras
+  const mnemonic = bip39.generateMnemonic(wordlist, 256);
+
+  // 2. Seed
+  const bip39Passphrase = wordlist[crypto.randomInt(wordlist.length)];
+  const seed = await bip39.mnemonicToSeed(mnemonic, bip39Passphrase);
+
+
+  // 3. Private key via SLIP-10
+  const privateKeyBytes = slip10DeriveEd25519(seed, RADIX_PATH);
+  const privateKeyHex = Buffer.from(privateKeyBytes).toString("hex");
+
+  // 4. Public key via Node.js crypto
+  const publicKeyBytes = derivePublicKey(privateKeyBytes);
+  const publicKey = new PublicKey.Ed25519(publicKeyBytes.toString("hex"));
+
+  // 5. Address Radix
+  const address = await RadixEngineToolkit.Derive.virtualAccountAddressFromPublicKey(
+    publicKey,
+    NetworkId.Mainnet
+  );
+
+  // 6. Encriptar con passphrase automática
+  const passphrase = crypto.randomBytes(32).toString("hex");
+  const encrypted = Keystore.encrypt(privateKeyHex, passphrase);
+
+  // 7. Guardar keystore
+  Keystore.save({
+    version: 1,
+    address: address.toString(),
+    bip39Passphrase,
+    ...encrypted,
+  });
+
+  // 8. Guardar passphrase
+  const passphraseFile = Keystore.path().replace("keystore.json", "passphrase.key");
+  fs.writeFileSync(passphraseFile, passphrase, { mode: 0o600 });
+
+  // 9. Mostrar
+  console.log("⚠️  SAVE THESE 24 WORDS IN A SAFE PLACE:");
+  console.log("   I never show again.\n");
+  const words = mnemonic.split(" ");
+  words.forEach((w, i) => {
+    process.stdout.write(`  ${String(i + 1).padStart(2, "0")}. ${w.padEnd(12)}`);
+    if ((i + 1) % 4 === 0) process.stdout.write("\n");
+  });
+  console.log("\n🔑 WORD PASS (SAVE with seeds):");
+  console.log("  ", bip39Passphrase);
+  console.log("\n⚠️  Without these word + 24 seeds NO recovery of your wallet will be posible.");
+  
+  console.log("\n⚠️  You can import these seeds on the radix wallet and control there the Agent-Notarized Wallet if you want, but these is totally optional and not required to the agent work,because it use the component instantiate on further stepson the web of wallet-agent-ai");
+
+
+  console.log("\n📍 Directión Agent-Notarized SAVE it!!!:");
+  console.log("  ", address.toString());
+  console.log("\n💰 Deposit 20 XRD on these address for fees on iniciation notarized steps.These usually never spent but system need to notarization of TXs");
+  console.log("\n✅ Keystore save on:", Keystore.path());
+}

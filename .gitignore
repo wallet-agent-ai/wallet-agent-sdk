@@ -1,0 +1,24 @@
+Instrucciones
+instantiate-devfee.ts
+test-swap-mainet.ts
+TEST
+claim-royalties.ts 
+claim-devfee.ts 
+.env.agent
+wallet-agent-ai-radix-1.0.0.tgz 
+
+# Node
+node-modules/
+dist/
+
+#Logs
+*.log 
+#Keystore
+keystore.json
+*.keystore
+
+#telegram-bot-test
+src/telegram-bot.ts
+.env.telegram
+
+
