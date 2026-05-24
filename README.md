@@ -53,7 +53,7 @@ Transaction executes on Radix — fully auditable on-chain
 ## Installation
 
 ```bash
-npm install agent-wallet-radix
+npm install wallet-agent-ai-radix
 npx agent-wallet init 
 ```
 
