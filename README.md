@@ -14,10 +14,26 @@ over your funds.
 The owner defines the rules. The agent operates within them. On-chain, always.
 
 **The agent CAN:**
-- ✓ Transfer XRD, HUSDC, HUSDT, HWBTC and HETH to approved addresses
+- ✓ Transfer any assert of the radix net.
 - ✓ Swap tokens via AGGR (Astrolescent or your own private instance)
 - ✓ Place conditional orders that execute automatically at a target price
 - ✓ Check vault balance before operating
+
+- New Adds on  V2.0 
+- Stake and Unstake automatic on the first 25 best validators( our algorithm select its and automatic add to whitelist on instantiate moment ). You could check on whitelist if your desired validator isn't included , just whitelist it and use.
+
+- WEFT  protocol , add liquidity , create CDP , add or remove collateral , borrow.  close CDP , burn badge , all !!!  
+
+- Add liquidity and remove on the 3 DEXes from radix ( Ociswap , Caviar and Defiplaza ). Only the 20 more importants tokens have theirs contract added to the
+  list. But you could add in others just telling to your agent what is the radix component where you want to put the liquidity , the token A and B and the dex
+  where put ( caviar weight or quanta , ociswap basicpool or precission or defiplaza) and the agent could choose the right tools and steps to do.If in doubs aks
+  for help to the agent or on telegram channel. 
+
+- Add liquidity on LSULP ( first must to have some staking). Then on CaviarSwap your agent could put that stakes LSU to LSULP and gain some more APY.  
+
+- New web more simplificated , all info under contract all the time available. All protocols currently whitelisted so user don't need to worry about it. 
+
+- MCP tools develop for more easy futures updates and agent workflow.  
 
 **The agent CANNOT:**
 - ✗ Send funds to addresses not in the whitelist
@@ -118,7 +134,7 @@ NOTARIZER_PRIVATE_KEY=XXXXXXXX
 # Required
 #NOTARIZER_ADDRESS
 NOTARIZER_ADDRESS=account_XXXXXX
-#AGENT_ACCOUNT_ADDRESS
+#AGENT_ACCOUNT_ADDRESS same as notarized..... 
 AGENT_ACCOUNT_ADDRESS=account_XXXX
 #COMPONENT_ADDRESS or POLICY_VAULT_ADDRESS SAME 
 COMPONENT_ADDRESS=component_XXXXXXX
@@ -214,39 +230,8 @@ const response = await openai.chat.completions.create({
 | `wallet_transfer` | Transfer tokens to a whitelisted address |
 | `wallet_swap` | Swap tokens via AGGR (requires aggrConfig) |
 | `wallet_conditional_order` | Buy or sell automatically at a target price |
+- V2 versions dont have his tools listed here.  But agent find it automatic. 
 
----
-
-## Adding Custom Assets
-
-Default assets: `XRD`, `HUSDC`, `HUSDT`, `HWBTC`, `HETH`
-
-To add any additional token:
-
-```typescript
-wallet.registerAsset("MYTOKEN", {
-  mainnet:  "resource_rdx1t...",
-  stokenet: "resource_tdx_2_1t...",
-});
-
-// Now use it like any default asset
-await wallet.transfer({
-  to: "account_rdx1...",
-  amount: 100,
-  asset: "MYTOKEN",
-  reason: "payment"
-});
-```
-
----
-
-## Networks
-
-| Network | Description |
-|---|---|
-| `mainnet` | Radix mainnet — real funds |
-| `stokenet` | Radix testnet — for development and testing |
-| `localnet` | Local resim simulator — for development without network |
 
 ---
 
