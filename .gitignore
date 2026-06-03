@@ -1,0 +1,23 @@
+Instrucciones
+TEST
+TEST2
+.env.agent
+wallet-agent-ai-radix-1.0.0.tgz 
+
+# Node
+node-modules/
+dist/
+
+#Logs
+*.log 
+#Keystore
+keystore.json
+*.keystore
+
+#telegram-bot-test
+src/telegram-bot.ts
+src/agent.ts
+.env.telegram
+.env.telegram-stokenet
+
+
