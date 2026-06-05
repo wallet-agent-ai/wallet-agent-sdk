@@ -57,6 +57,7 @@ export interface RemoveLiquidityParams {
   poolAddress: string;
   lpTokenAddress: string;
   lpAmount: string;
+  lpNftId?: string;
   vaultAddress: string;
   notarizerAddress: string;
 }

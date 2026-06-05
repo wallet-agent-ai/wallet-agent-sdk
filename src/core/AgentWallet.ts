@@ -40,8 +40,8 @@ constructor(config: AgentWalletConfig) {
     this.aggrClient = new AGGRClient(config.aggrConfig);
   }
 
-if (config.notarizerprivateKey) {
-  this.radixClient = new RadixClient(config.notarizer.privateKey, this.networkConfig);
+if (config.notarizerPrivateKey) {
+  this.radixClient = new RadixClient(config.notarizerPrivateKey, this.networkConfig);
 } else {
   this.radixClient = RadixClient.fromKeystore(this.networkConfig);
 }

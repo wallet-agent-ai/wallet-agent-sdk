@@ -21,26 +21,25 @@ export {
   createListOrdersTool,
 } from "./tools/LangChainTools";
 
-// ─── MCP Tools v2 — staking y liquidez ───────────────────────────────────────
-// ─── MCP Tools v2 — staking y liquidez ───────────────────────────────────────
+// ─── MCP Tools v2 — staking, liquidez y lending ──────────────────────────────
 export {
   createStakingTools,
   createStakeXrdTool,
   createUnstakeXrdTool,
   createClaimXrdTool,
   createLiquidityTools,
-  createGetLiquidityPoolsTool,
   createAddLiquidityTool,
   createRemoveLiquidityTool,
-  // WEFT LENDING 
   createWeftLendingTools,
   createWeftSupplyTool,
   createWeftWithdrawTool,
   createWeftCreateCdpTool,
   createWeftManageCdpTool,
   createWeftCdpHealthTool,
+  createWeftGetSupportedTokensTool,
+  createWeftBurnCdpTool,
+  createWeftCloseCdpTool,
 } from "./mcp";
-
 
 // ─── Tipos v1 ─────────────────────────────────────────────────────────────────
 export type {
@@ -53,10 +52,7 @@ export type {
   BalanceResult,
   ConditionalOrder,
   NetworkConfig,
-  AssetAddresses,
-  CustomAssetAddresses,
   SupportedAsset,
-  DefaultAsset,
 } from "./types";
 
 // ─── Tipos MCP v2 ─────────────────────────────────────────────────────────────
@@ -72,14 +68,3 @@ export type {
   LiquidityResult,
   LiquidityProvider,
 } from "./mcp";
-
-import {
-  weftLendingTools,
-  handleWeftSupply,
-  handleWeftWithdraw,
-  handleWeftCreateCdp,
-  handleWeftManageCdp,
-  handleWeftCdpHealth,
-} from "./tools/lending";
-
-

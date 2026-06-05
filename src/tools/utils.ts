@@ -1,4 +1,4 @@
-import { getTokenDivisibility } from "../mcp/known-pools.ts";
+import { getTokenDivisibility } from "../mcp/known-pools.js";
 
 
 export function safeDecimal(amount: string | number, tokenAddress: string): string {

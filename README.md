@@ -24,12 +24,13 @@ The owner defines the rules. The agent operates within them. On-chain, always.
 
 - WEFT  protocol , add liquidity , create CDP , add or remove collateral , borrow.  close CDP , burn badge , all !!!  
 
-- Add liquidity and remove on the 3 DEXes from radix ( Ociswap , Caviar and Defiplaza ). Only the 20 more importants tokens have theirs contract added to the
-  list. But you could add in others just telling to your agent what is the radix component where you want to put the liquidity , the token A and B and the dex
-  where put ( caviar weight or quanta , ociswap basicpool or precission or defiplaza) and the agent could choose the right tools and steps to do.If in doubs aks
-  for help to the agent or on telegram channel. 
+- Add liquidity and remove on the 3 DEXes from radix ( Ociswap , Caviar and Defiplaza ). Only the 20 most important tokens have theirs contract added to the
+  list. But you could add others just telling to your agent what is the radix component where you want to put the liquidity , the token A and B and the dex
+  where put ( caviar weight or quanta , ociswap basicpool or precission or defiplaza) and the agent could choose the right tools and steps to do.If in doubs ask
+  for help to the agent or on our telegram channel. 
 
-- Add liquidity on LSULP ( first must to have some staking). Then on CaviarSwap your agent could put that stakes LSU to LSULP and gain some more APY.  
+- Add liquidity on LSULP ( first must to have some staking). Tell add liquidity LSU and your agent could put that stakes LSU to LSULP and gain some more APY.
+  Same to retire , remove LSU liquidity.   
 
 - New web more simplificated , all info under contract all the time available. All protocols currently whitelisted so user don't need to worry about it. 
 
