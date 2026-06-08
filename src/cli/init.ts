@@ -1,6 +1,6 @@
 import * as bip39 from "@scure/bip39";
 import { wordlist } from "@scure/bip39/wordlists/english.js";
-import { RadixEngineToolkit, PublicKey, NetworkId } from "@radixdlt/radix-engine-toolkit";
+import { RadixEngineToolkit, PublicKey, NetworkId } from "@steleaio/radix-engine-toolkit";
 import { Keystore } from "../keystore/Keystore";
 import * as crypto from "crypto";
 import * as readline from "readline";

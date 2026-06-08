@@ -2,7 +2,7 @@ import * as bip39 from "@scure/bip39";
 import { wordlist } from "@scure/bip39/wordlists/english.js";
 import { hmac } from "@noble/hashes/hmac.js";
 import { sha512 } from "@noble/hashes/sha2.js";
-import { RadixEngineToolkit, PublicKey, NetworkId } from "@radixdlt/radix-engine-toolkit";
+import { RadixEngineToolkit, PublicKey, NetworkId } from "@steleaio/radix-engine-toolkit";
 import { Keystore } from "../keystore/Keystore";
 import * as crypto from "crypto";
 import * as fs from "fs";

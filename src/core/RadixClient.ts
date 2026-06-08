@@ -6,7 +6,7 @@ import {
   TransactionManifest,
   NotarizedTransaction,
   generateRandomNonce,
-} from "@radixdlt/radix-engine-toolkit";
+} from "@steleaio/radix-engine-toolkit";
 import { NetworkConfig } from "../types";
 
 export class RadixClient {

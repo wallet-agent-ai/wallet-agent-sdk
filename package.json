@@ -1,6 +1,6 @@
 {
   "name": "wallet-agent-ai",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Programmable wallet for AI agents on Radix network",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -34,7 +34,7 @@
     "@modelcontextprotocol/sdk": "^1.29.0",
     "@noble/ed25519": "^3.1.0",
     "@noble/hashes": "^2.2.0",
-    "@radixdlt/radix-engine-toolkit": "^1.0.6",
+    "@steleaio/radix-engine-toolkit": "2.0.0-dev.5",
     "@scure/bip39": "^2.2.0",
     "dotenv": "^17.4.2",
     "langchain": "^1.4.0",
