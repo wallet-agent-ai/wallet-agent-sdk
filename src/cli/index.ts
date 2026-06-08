@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { init } from "./init";
 import { recover } from "./recover";
 import { unlockKeystore, getNotarizerAddress } from "./unlock";
