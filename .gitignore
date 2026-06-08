@@ -5,7 +5,7 @@ TEST2
 wallet-agent-ai-radix-1.0.0.tgz 
 
 # Node
-node-modules/
+node_modules/
 dist/
 
 #Logs
