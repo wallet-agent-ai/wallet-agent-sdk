@@ -27,11 +27,29 @@ function displayMnemonic(mnemonic: string): void {
   console.log();
 }
 
+// ─── Network detection ────────────────────────────────────────────────────────
+// Reads --network stokenet | mainnet from CLI args
+// Default: mainnet (safe — same behaviour as before)
+
+function getNetworkFromArgs(): { networkId: number; networkName: string } {
+  const args  = process.argv.slice(2);
+  const idx   = args.indexOf("--network");
+  const value = idx !== -1 ? args[idx + 1]?.toLowerCase() : "mainnet";
+
+  if (value === "stokenet") {
+    return { networkId: NetworkId.Stokenet, networkName: "Stokenet" };
+  }
+  return { networkId: NetworkId.Mainnet, networkName: "Mainnet" };
+}
+
 // ─── Init ─────────────────────────────────────────────────────────────────────
 
 export async function init() {
+  const { networkId, networkName } = getNetworkFromArgs();
+
   console.log("\n🤖 AgentWallet — Initialize");
   console.log("================================\n");
+  console.log(`🌐 Network: ${networkName}\n`);
 
   if (Keystore.exists()) {
     console.log("⚠️  A keystore already exists:", Keystore.path());
@@ -73,11 +91,6 @@ export async function init() {
 
     if (useOwnPassphrase) {
       bip39Passphrase = (await ask(rl, "Enter your BIP39 passphrase (leave empty for none): ")).trim();
-      // if (!bip39Passphrase) {
-      //   console.error("\n❌ Passphrase cannot be empty.");
-      //   rl.close();
-      //   return;
-      // }
       console.log("✅ BIP39 passphrase set.\n");
     } else {
       bip39Passphrase = wordlist[crypto.randomInt(wordlist.length)];
@@ -108,16 +121,16 @@ export async function init() {
     }
 
     // ── 4. Derive keys ─────────────────────────────────────────────────────
-    const seed = await bip39.mnemonicToSeed(mnemonic, bip39Passphrase);
+    const seed            = await bip39.mnemonicToSeed(mnemonic, bip39Passphrase);
     const privateKeyBytes = slip10DeriveEd25519(seed, RADIX_PATH);
-    const privateKeyHex = Buffer.from(privateKeyBytes).toString("hex");
-    const publicKeyBytes = derivePublicKey(privateKeyBytes);
-    const publicKey = new PublicKey.Ed25519(publicKeyBytes.toString("hex"));
+    const privateKeyHex   = Buffer.from(privateKeyBytes).toString("hex");
+    const publicKeyBytes  = derivePublicKey(privateKeyBytes);
+    const publicKey       = new PublicKey.Ed25519(publicKeyBytes.toString("hex"));
 
-    // ── 5. Radix address ───────────────────────────────────────────────────
+    // ── 5. Radix address — uses selected network ───────────────────────────
     const address = await RadixEngineToolkit.Derive.virtualAccountAddressFromPublicKey(
       publicKey,
-      NetworkId.Mainnet
+      networkId   // ← stokenet or mainnet based on --network flag
     );
 
     // ── 6. Encrypt and save keystore ───────────────────────────────────────
@@ -139,17 +152,24 @@ export async function init() {
     }
 
     // ── 8. Final output ────────────────────────────────────────────────────
-    console.log("📍 Agent-Notarized Wallet Address — SAVE THIS:");
+    console.log(`📍 Agent-Notarized Wallet Address (${networkName}) — SAVE THIS:`);
     console.log("  ", address.toString());
     console.log();
-    console.log("💰 Deposit at least 20 XRD to this address for transaction fees.");
-    console.log("   This XRD is used for notarization only — not for operations.");
+
+    if (networkId === NetworkId.Stokenet) {
+      console.log("💰 Fund this address from the Stokenet faucet:");
+      console.log("   https://stokenet-dashboard.radixdlt.com/account/" + address.toString());
+      console.log("   Click 'Get XRD from faucet' — you need at least 10 XRD for fees.");
+    } else {
+      console.log("💰 Deposit at least 20 XRD to this address for transaction fees.");
+    }
+
     console.log();
     console.log("ℹ️  You can optionally import these seeds into the Radix Wallet app");
     console.log("   to control the Agent-Notarized Wallet manually when needed.");
     console.log();
     console.log("✅ Keystore saved to:", Keystore.path());
-    console.log("\n🚀 Next step: go to the AgentWallet web dashboard and instantiate your component.\n");
+    console.log("\n🚀 Next step: from the web dashboard mint an Agent Badge to this address.\n");
 
   } finally {
     rl.close();

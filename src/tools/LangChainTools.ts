@@ -1,4 +1,5 @@
 import { AgentWallet } from "../core/AgentWallet";
+import { getTokenDivisibility } from "../mcp/known-pools.js";
 import { SupportedAsset, TransferParams, SwapParams, ConditionalOrder } from "../types";
 import { createStakingTools } from "../mcp/tools/staking";
 import { createLiquidityTools } from "../mcp/tools/liquidity";
@@ -42,7 +43,10 @@ async function preflightChecks(
 
   // 3. XRD balance check — need enough for fees
   const MIN_XRD_FOR_FEES = 10;
-const xrdBalance = (balance.balances as any)["XRD"] ?? 0;
+const xrdBalance =
+  balance.resources?.find((r: any) => r.symbol === "XRD")?.amount ??
+  (balance.balances as any)["XRD"] ??
+  0;
 const xrdNeeded = asset === "XRD" ? amount + MIN_XRD_FOR_FEES : MIN_XRD_FOR_FEES;
 
   if (xrdBalance < xrdNeeded) {
@@ -54,8 +58,13 @@ const xrdNeeded = asset === "XRD" ? amount + MIN_XRD_FOR_FEES : MIN_XRD_FOR_FEES
     };
   }
 
-  // 4. Asset balance check
-const assetBalance = (balance.balances as any)[asset] ?? 0;
+  // 4. Asset balance check — search by resourceAddress OR symbol
+const assetBalance =
+  balance.resources?.find(
+    (r: any) => r.resourceAddress === asset || r.symbol === asset
+  )?.amount ??
+  (balance.balances as any)[asset] ??
+  0;
 
 
   if (assetBalance < amount) {
@@ -169,8 +178,12 @@ export function createTransferTool(wallet: AgentWallet): AgentTool {
           });
         }
 
-        // ── Normal transfer ──
-        const result = await wallet.transfer(p);
+        // ── Normal transfer — truncate amount to token divisibility to avoid InvalidAmount in take_dev_fee ──
+        const assetAddress = wallet.getAssetAddress(p.asset as any);
+        const div = getTokenDivisibility(assetAddress);
+        const factor = Math.pow(10, div);
+        const safeAmount = Math.floor(p.amount * factor) / factor;
+        const result = await wallet.transfer({ ...p, amount: safeAmount });
 
         if (result.txId === "pending_owner_approval") {
           wallet.waitForOwnerApproval(
