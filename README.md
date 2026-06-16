@@ -59,6 +59,101 @@ Transaction executes on Radix — fully auditable on-chain
 
 ---
 
+## Architecture
+
+The diagrams below show how ownership, permissions, and funds are split between
+the human owner, the agent's notarizer account, and the on-chain PolicyVault.
+This separation is what makes AgentWallet safe: the agent never holds your real
+funds directly, and every action it takes is checked by the contract itself —
+not by the SDK, not by good faith.
+
+### Setup and operating flow
+
+This diagram covers the full lifecycle: from installing the SDK and deploying
+the PolicyVault, to the checks the contract performs on every single transaction
+the agent attempts.
+
+```mermaid
+flowchart TB
+  H[Human Owner] --> I[Install SDK and run init]
+  I --> N[Create Notarizer/Agent Account]
+  H --> D[Open deploy page and configure rules]
+  N --> D
+  D --> P[Instantiate PolicyVault]
+
+  P --> B1[Mint AWB: Agent Session Badge NFT]
+  P --> B2[Mint PVOB: PolicyVault Owner Badge]
+
+  B1 --> L1[AWB lives in Notarizer/Agent Account\nNon-transferable, burn only]
+  B2 --> L2[PVOB lives in Human Owner Wallet]
+
+  H --> F[Fund PolicyVault and Agent fee account]
+  F --> C[Agent starts operating]
+
+  subgraph AgentCapabilities[What the agent can do]
+    C --> T1[Transfer whitelisted assets]
+    C --> T2[Swap tokens via AGGR]
+    C --> T3[Create conditional orders]
+    C --> T4[Stake/Unstake with supported validators]
+    C --> T5[Add/Remove liquidity on supported DEXes]
+    C --> T6[WEFT operations: CDP, collateral, borrow, close]
+  end
+
+  subgraph OnChainChecks[PolicyVault checks every tx on-chain]
+    V1[Valid AWB presented]
+    V2[Within spend limits and daily cap]
+    V3[Destination and protocol allowlisted]
+  end
+
+  T1 --> V1
+  T2 --> V1
+  T3 --> V1
+  T4 --> V1
+  T5 --> V1
+  T6 --> V1
+
+  V1 --> V2 --> V3 --> X[Execute transaction on Radix]
+```
+
+### Where the funds actually live
+
+A common point of confusion: the agent's notarizer account does **not** hold
+your spendable funds. It only holds enough XRD to pay network fees and signs
+transaction intents using its AWB badge. The real funds — the ones the agent
+can actually transfer, swap, stake, or provide as liquidity — live inside the
+PolicyVault component itself, governed by the rules the owner configured at
+instantiation.
+
+```mermaid
+flowchart LR
+  subgraph H[Human Account]
+    PVOB[PVOB badge]
+  end
+
+  subgraph A[Agent Account / Notarizer]
+    AWB[AWB badge]
+    FXRD[Fee XRD only]
+  end
+
+  subgraph P[PolicyVault Component]
+    RXRD[Real funds for operations\nXRD/tokens]
+  end
+
+  H -->|Sends fee buffer XRD| A
+  H -->|Funds spendable assets| P
+
+  A -->|Uses AWB + signs tx intent| P
+  P -->|Executes transfers/swaps| NET[(Radix Network)]
+
+  A -.-> N1[Note: Agent account does NOT hold real funds]
+  H -.-> N2[Note: Owner controls permissions via PVOB]
+
+  classDef note fill:#fff8db,stroke:#c8a03a,stroke-width:1px,stroke-dasharray: 5 3,color:#5b4a1a;
+  class N1,N2 note;
+```
+
+---
+
 ## Requirements
 
 - Node.js 18 or higher

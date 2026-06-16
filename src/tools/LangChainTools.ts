@@ -159,8 +159,9 @@ export function createTransferTool(wallet: AgentWallet): AgentTool {
 
         const config = await wallet.getConfig();
 
-        // ── Multisig threshold — request owner approval, never split ──
-        if (p.amount > config.multisigThreshold) {
+        // ── Max per transaction OR multisig threshold — request owner approval ──
+        // Both cases submit a pending action and STOP — never retry or split.
+        if (p.amount > config.maxPerTransaction || p.amount > config.multisigThreshold) {
           const result = await wallet.requestLargeTransfer({
             to: p.to,
             amount: p.amount,

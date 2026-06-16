@@ -212,13 +212,24 @@ if (config.multisigThreshold && params.amount > config.multisigThreshold) {
 
 
 // 4. VALIDAR MAX PER TRANSACTION
-// Si supera el límite del agente pero NO el del owner — rechazar
+// Si supera el límite del agente pero NO el del owner — pedir aprobación igual
 else if (params.amount > config.maxPerTransaction) {
-  throw new Error(
-    `[AgentWallet] Amount ${params.amount} exceeds max per transaction (${config.maxPerTransaction}). ` +
-    `For larger transfers up to ${config.multisigThreshold}, owner approval is required. ` +
-    `Use requestOwnerApproval() instead.`
-  );
+  console.log(`[AgentWallet] Amount ${params.amount} exceeds max per transaction (${config.maxPerTransaction}). Requesting owner approval...`);
+  await this.requestLargeTransfer({
+    to: params.to,
+    amount: params.amount,
+    asset: params.asset,
+    reason: params.reason,
+  });
+  return {
+    txId: "pending_owner_approval",
+    amount: params.amount,
+    asset: params.asset,
+    to: params.to,
+    reason: params.reason,
+    timestamp: new Date(),
+    success: false,
+  };
 }
 // 5. TRANSFERENCIA NORMAL — dentro de los límites del agente
 else {
